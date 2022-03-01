@@ -1,0 +1,17 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luyisac.novel_zjx.mapper.CommentMapper">
+
+    <select id="getComments" resultType="com.luyisac.novel_zjx.entity.Comment">
+        select * from novel_comment where book_id=#{bookId}
+    </select>
+
+    <insert id="addcomment" parameterType="com.luyisac.novel_zjx.entity.Comment">
+        insert into novel_comment values(null,#{userId},#{content},#{bookId},#{createTime},1,0,null)
+    </insert>
+
+    <update id="upComment" parameterType="com.luyisac.novel_zjx.entity.Comment">
+        update novel_comment set up=up+1 where book_id=#{bookId} and user_id=#{userId}
+    </update>
+</mapper>

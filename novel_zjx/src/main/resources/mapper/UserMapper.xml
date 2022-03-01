@@ -1,0 +1,29 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luyisac.novel_zjx.mapper.UserMapper">
+
+    <select id="login" resultType="com.luyisac.novel_zjx.entity.User">
+        select * from novel_user where username =#{userName} and password=#{password};
+    </select>
+
+    <select id="getUser" resultType="com.luyisac.novel_zjx.entity.User">
+        select * from novel_user where username =#{userName};
+    </select>
+
+    <select id="getUserById" resultType="com.luyisac.novel_zjx.entity.User">
+        select * from novel_user where id =#{id};
+    </select>
+
+    <select id="getIdByName" resultType="Integer">
+        select id from novel_user where username =#{userName};
+    </select>
+
+    <insert id="register" parameterType="com.luyisac.novel_zjx.entity.User" keyProperty="id" useGeneratedKeys="true">
+        insert into novel_user values (null,#{userName},#{password},#{sex},null,null,null,#{headImgUrl},#{introduce},1,null,null,#{exp},#{integral},#{createTime},#{recommend})
+    </insert>
+
+    <update id="addUserRecommend">
+        update novel_user set recommend=recommend+#{recNum} where use_id=#{userId}
+    </update>
+</mapper>

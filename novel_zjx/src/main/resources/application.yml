@@ -1,0 +1,57 @@
+server:
+  port: 8081
+  tomcat:
+    uri-encoding: utf-8
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/novel?serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&useSSL=true
+    username: root
+    password: luyisac12300
+  #  redis:
+  #    database: 0
+  #    host: 192.168.0.112
+  #    port: 6397
+  #    jedis:
+  #      pool:
+  #        max-active: 8
+  #        max-wait: -1
+  #        max-idle: 8
+  #        min-idle: 0
+  #    timeout: 2000
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
+    timeout: 30000
+    password:
+mybatis:
+  # model??
+  type-aliases-package: com.luyisac.novel_zjx.entity
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+pagehelper:
+  autoRuntimeDialect: true
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+fdfs:
+  connect-timeout: 601
+  so-timeout: 1501
+  thumb-image:
+    height: 80
+    width: 80
+  tracker-list:
+    123.60.72.169:22122
+image:
+  location: http://123.60.72.169:88/health/

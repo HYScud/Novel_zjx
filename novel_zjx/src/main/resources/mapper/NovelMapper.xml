@@ -1,0 +1,108 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luyisac.novel_zjx.mapper.NovelMapper">
+
+    <select id="getAllNovel" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list
+    </select>
+
+
+    <select id="getNovel" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list where user_id=#{userId}
+    </select>
+
+    <select id="searchNovel" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list where novelname=#{searchText} or author=#{searchText}
+    </select>
+
+    <select id="getNovelByCategory" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list where category=#{category}
+    </select>
+
+    <select id="getNovelByTag" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list where tag=#{tag}
+    </select>
+
+    <select id="getNovelByword" parameterType="Integer" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list where 1 = 1
+        <choose>
+            <when test="word==0 ">
+                and words <![CDATA[ <= ]]> 500000
+            </when >
+            <when test="word==1 ">
+                and words <![CDATA[ >= ]]> 500000 and words <![CDATA[ <= ]]> 1000000
+            </when >
+            <when test="word==2 ">
+                and words <![CDATA[ >= ]]> 1000000 and words <![CDATA[ <= ]]> 2000000
+            </when >
+            <when test="word==3 ">
+                and words <![CDATA[ >= ]]> 2000000 and words <![CDATA[ <= ]]> 3000000
+            </when >
+            <otherwise>
+                and words <![CDATA[ >= ]]> 3000000
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="getNovelByHitsNum" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list order by hitsnum desc limit 2;
+    </select>
+
+    <select id="getNovelByUpdateTime" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list order by update_time;
+    </select>
+
+    <select id="getNovelByMultiple" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list
+        <where>
+            <if test="tags!=null and tags!=''">
+                and tags=#{tags}
+            </if>
+            <if test="category!=null and category!=''">
+                and category=#{category}
+            </if>
+            <if test="status!=null and status!=''">
+                and status=#{status}
+            </if>
+            <if test="words!=null and words!=''">
+                <choose>
+                    <when test="words==0 ">
+                        and words <![CDATA[ <= ]]> 500000
+                    </when >
+                    <when test="words==1 ">
+                        and words <![CDATA[ >= ]]> 500000 and words <![CDATA[ <= ]]> 1000000
+                    </when >
+                    <when test="words==2 ">
+                        and words <![CDATA[ >= ]]> 1000000 and words <![CDATA[ <= ]]> 2000000
+                    </when >
+                    <when test="words==3 ">
+                        and words <![CDATA[ >= ]]> 2000000 and words <![CDATA[ <= ]]> 3000000
+                    </when >
+                    <otherwise>
+                        and words <![CDATA[ >= ]]> 3000000
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+
+
+    </select>
+
+    <select id="getNovelByStatus" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list where status=#{status}
+    </select>
+
+    <select id="getNovelByRating" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select * from novel_list order by rating desc limit 2;
+    </select>
+
+    <select id="getNovelContent" resultType="com.luyisac.novel_zjx.entity.Novel">
+        select content from novel_list where novel_id=#{novelId} and chapter_id=#{chapterId};
+    </select>
+
+    <update id="addRecommend">
+        update novel_list set recommend =recommend+#{recommend} where novel_id=#{novelId}
+    </update>
+</mapper>
