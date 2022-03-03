@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.util.StringUtil;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -159,24 +160,17 @@ public class UserController {
     }
 
     @PostMapping("/uploadUserAvatarBase64")
-    public Result uploadUserAvatar(MultipartFile file) throws Exception {//        获取前端传过来的把涩的字符串,
-        User user = new User();
-        user.setId(1);
+    public Result uploadUserAvatar(MultipartFile file) throws Exception {//        获取前端传过来的base的字符串,
         System.out.println("上传文件开始");
-        user.setPassword(null);
-//        上传文件到fastdfs
-
+        //上传文件到fastdfs
         String url = fastDFSClient.uploadFile(file);
         url = location + url;
         System.out.println(url);
-//      获取缩略图
+        // 获取缩略图
         String thump = "_80x80.";
         String arr[] = url.split("\\.");
         String thumpurl = arr[0] + thump + arr[1];
-//        user.setUseravatar(thumpurl);
-//        user.setUseravatarbig(url);
-//
-//        int count=userService.updateAvatar(user);
+
         System.out.println("上传文件文件完毕");
         return new Result(ResultEnums.SUCCESS.getCode(), "操作操作成功", url);
     }

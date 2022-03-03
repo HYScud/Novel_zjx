@@ -26,7 +26,7 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    jedis:
+    lettuce:
       pool:
         max-active: 8
         max-idle: 8
@@ -40,11 +40,19 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.log4j2.Log4j2Impl
 pagehelper:
-  autoRuntimeDialect: true
-  reasonable: true
-  supportMethodsArguments: true
+  helperDialect: mysql
+  reasonable: true  #开启优化，如果开启优化，在分页页码结果没有数据的时候,会显示有数据的页码数据
+  supportMethodsArguments: true #是否支持接口参数来传递分页参数，默认false
+  pageSizeZero: false #pageSize=0 返回所有
   params: count=countSql
+#minio:
+#  endpoint: http://172.16.3.28:10000
+#  accessKey: admin
+#  secretKey: 12345678
+#  bucketName: aaa
+#  fdfs服务配置
 fdfs:
   connect-timeout: 601
   so-timeout: 1501
@@ -55,3 +63,4 @@ fdfs:
     123.60.72.169:22122
 image:
   location: http://123.60.72.169:88/health/
+

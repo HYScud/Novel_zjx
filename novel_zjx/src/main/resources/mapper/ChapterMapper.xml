@@ -4,11 +4,11 @@
 <mapper namespace="com.luyisac.novel_zjx.mapper.ChapterMapper">
 
     <select id="getAllChapters" resultType="com.luyisac.novel_zjx.entity.Chapter">
-        select * from novel_chapter where novel_id=#{bookId} order by chapter_id
+        select * from chapter where id=#{bookId} order by chapter_id
     </select>
 
     <insert id="updateChapter" parameterType="com.luyisac.novel_zjx.entity.Chapter">
-        insert  into novel_chapter(id,novel_id,chapter_name,content,chapter_id,content_num,create_time) values(null,#{novelId},#{chapterName},#{content},#{chapterId},#{contentNum},#{createTime})
+        insert  into chapter(id,id,chapter_name,content,chapter_id,content_num,create_time) values(null,#{novelId},#{chapterName},#{content},#{chapterId},#{contentNum},#{createTime})
     </insert>
 
     <delete id="deleteChapter">
@@ -16,10 +16,10 @@
     </delete>
 
     <select id="getContentByCId" resultType="com.luyisac.novel_zjx.entity.Chapter">
-        select * from novel_chapter where novel_id=#{booId} and chapter_id=#{chapterId}
+        select * from chapter where id=#{booId} and chapter_id=#{chapterId}
     </select>
 
     <select id="getContent" resultType="com.luyisac.novel_zjx.entity.Chapter">
-        select * from novel_chapter where novel_id=#{booId}
+        select * from chapter where id=#{booId}
     </select>
 </mapper>

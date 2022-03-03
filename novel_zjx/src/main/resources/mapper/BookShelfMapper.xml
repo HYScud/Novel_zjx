@@ -4,19 +4,19 @@
 <mapper namespace="com.luyisac.novel_zjx.mapper.BookShelfMapper">
 
     <select id="getBookShelf" resultType="com.luyisac.novel_zjx.entity.Bookshelf">
-        select * from novel_bookshelf where user_id=#{userId}
+        select * from bookshelf where user_id=#{userId}
     </select>
 
     <update id="updateBookChapter">
-        update novel_bookshelf set chapter_id=#{chapterId} where user_id=#{userId} and novel_id=#{novelId}
+        update bookshelf set chapter_id=#{chapterId} where user_id=#{userId} and id=#{novelId}
     </update>
 
     <update id="deleteBook">
-        update novel_bookshelf set status=0 where user_id=#{userId} and novel_id=#{bookId}
+        update bookshelf set status=0 where user_id=#{userId} and id=#{bookId}
     </update>
 
     <update id="addBookToShelf">
-        insert into novel_bookshelf(id,user_id,novel_id,chapter_id,status,create_time,update_time) values (null,userId,novelId,chapterId,1,createTime,createTime)
+        insert into bookshelf(id,user_id,id,chapter_id,status,create_time,update_time) values (null,userId,novelId,chapterId,1,createTime,createTime)
     </update>
 
 </mapper>

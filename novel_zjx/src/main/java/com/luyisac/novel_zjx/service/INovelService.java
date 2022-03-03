@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface INovelService {
 
-    List<Novel> getMyNovels();
+    List<Novel> getMyNovel(Integer userId);
 
     List<Novel> searchNovel(String searchText);
 
     List<Novel> getNovelByCategory(String category);
 
-    List<Novel> getNovelByTag(String tag);
+    List<Novel> getNovelByTag(String tags);
 
     List<Novel> getNovelByword(Integer word);
 

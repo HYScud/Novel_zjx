@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface NovelMapper {
 
-    List<Novel> getMyNovels();
+    List<Novel> getMyNovel(Integer userId);
 
     List<Novel> searchNovel(String searchText);
 
@@ -18,7 +18,7 @@ public interface NovelMapper {
 
     List<Novel> getNovelByword(@Param("word") Integer word);
 
-    List<Novel> getNovelByTag(String tag);
+    List<Novel> getNovelByTag(String tags);
 
     List<Novel> getNovelByHitsNum();
 

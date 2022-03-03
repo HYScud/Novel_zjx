@@ -27,10 +27,6 @@ public class FileUtil {
         String thump = "_80x80.";
         String arr[] = url.split("\\.");
         String thumpurl = arr[0] + thump + arr[1];
-//        user.setUseravatar(thumpurl);
-//        user.setUseravatarbig(url);
-//
-//        int count=userService.updateAvatar(user);
         System.out.println("上传文件文件完毕");
         return url;
     }

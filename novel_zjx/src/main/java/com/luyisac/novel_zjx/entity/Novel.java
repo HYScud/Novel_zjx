@@ -1,12 +1,10 @@
 package com.luyisac.novel_zjx.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -25,13 +23,13 @@ public class Novel implements Serializable {
     private Integer status;
     private Integer favorites;
     private Integer position;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime create_time;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime update_time;
+    /*@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")*/
+    private Integer create_time;
+    private Integer update_time;
     private Integer hits_day;
     private Integer hits_week;
     private Integer hits_month;
     private Integer words;
     private Integer recommend;
+    private Category categorys;
 }

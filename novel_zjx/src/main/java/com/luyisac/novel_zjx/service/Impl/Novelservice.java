@@ -17,8 +17,8 @@ public class Novelservice implements INovelService {
     private NovelMapper novelMapper;
 
     @Override
-    public List<Novel> getMyNovels() {
-        return novelMapper.getMyNovels();
+    public List<Novel> getMyNovel(Integer userId) {
+        return novelMapper.getMyNovel(userId);
     }
 
     @Override
@@ -32,8 +32,8 @@ public class Novelservice implements INovelService {
     }
 
     @Override
-    public List<Novel> getNovelByTag(String tag) {
-        return novelMapper.getNovelByTag(tag);
+    public List<Novel> getNovelByTag(String tags) {
+        return novelMapper.getNovelByTag(tags);
     }
 
     @Override

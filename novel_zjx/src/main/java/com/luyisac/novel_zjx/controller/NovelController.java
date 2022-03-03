@@ -7,9 +7,11 @@ import com.luyisac.novel_zjx.entity.DTO.NovelPage;
 import com.luyisac.novel_zjx.entity.Novel;
 import com.luyisac.novel_zjx.entity.User;
 import com.luyisac.novel_zjx.enums.ResultEnums;
+import com.luyisac.novel_zjx.exception.CommonException;
 import com.luyisac.novel_zjx.service.Impl.Novelservice;
 import com.luyisac.novel_zjx.service.Impl.UserService;
 import com.luyisac.novel_zjx.utils.JwtUtil;
+import com.luyisac.novel_zjx.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,11 @@ public class NovelController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NovelController.class);
+
     /**
      * 获取所有小说
      * 待开发分页
@@ -34,13 +41,17 @@ public class NovelController {
      */
     @GetMapping("/getAllNovel")
     public Result<PageInfo> getAllNovel(Integer pageNum, Integer pageSize) {
-        List<Novel> novelList = novelservice.getAllNovel();
+        if (pageNum == null || pageSize == null) {
+            throw new CommonException("数值为空");
+        }
         PageHelper.startPage(pageNum, pageSize);
+        List<Novel> novelList = novelservice.getAllNovel();
+        System.out.println(pageNum + ":" + pageSize);
         if (!novelList.isEmpty()) {
             PageInfo pageInfo = new PageInfo(novelList);
             return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "获取所有小说成功", pageInfo);
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
@@ -48,15 +59,31 @@ public class NovelController {
      *
      * @return List<Novel>
      */
-    @GetMapping("/getNovel")
-    public Result<PageInfo> getMyNovels(Integer pageNum, Integer pageSize) {
-        List<Novel> novelList = novelservice.getMyNovels();
-        PageHelper.startPage(pageNum, pageSize);
-        if (!novelList.isEmpty()) {
-            PageInfo pageInfo = new PageInfo(novelList);
-            return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "获取我的小说成功", pageInfo);
+    @GetMapping("/getMyNovel")
+    public Result<PageInfo> getMyNovel(Integer pageNum, Integer pageSize, Integer userId) {
+        if (pageNum == null || pageSize == null) {
+            throw new CommonException("数值为空");
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        PageHelper.startPage(pageNum, pageSize);
+        List<Novel> novelList;
+        if (redisUtil.hasKey(userId.toString())) {
+            PageHelper.startPage(pageNum, pageSize);
+            novelList = (List<Novel>) redisUtil.get(userId.toString());
+            PageInfo pageInfo = new PageInfo(novelList);
+            log.info("从redis中取");
+            redisUtil.del(userId.toString());
+            return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "获取我的小说成功", pageInfo);
+        } else {
+            novelList = novelservice.getMyNovel(userId);
+            System.out.println(novelList);
+            if (!novelList.isEmpty()) {
+                redisUtil.set(userId.toString(),novelList);
+                PageInfo pageInfo = new PageInfo(novelList);
+                return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "获取我的小说成功", pageInfo);
+            }
+        }
+
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
@@ -67,13 +94,16 @@ public class NovelController {
      */
     @GetMapping("/searchNovel")
     public Result<PageInfo> searchNovel(String searchText, Integer pageNum, Integer pageSize) {
+        if (pageNum == null || pageSize == null) {
+            throw new CommonException("数值为空");
+        }
         List<Novel> novelList = novelservice.searchNovel(searchText);
         PageHelper.startPage(pageNum, pageSize);
         if (!novelList.isEmpty()) {
             PageInfo pageInfo = new PageInfo(novelList);
             return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "搜索获取小说成功", pageInfo);
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
@@ -84,30 +114,36 @@ public class NovelController {
      */
     @GetMapping("/getNovelByCategory")
     public Result<PageInfo> getNovelByCategory(String category, Integer pageNum, Integer pageSize) {
+        if (pageNum == null || pageSize == null || category == null) {
+            throw new CommonException("数值为空");
+        }
         List<Novel> novelList = novelservice.getNovelByCategory(category);
         PageHelper.startPage(pageNum, pageSize);
         if (!novelList.isEmpty()) {
             PageInfo pageInfo = new PageInfo(novelList);
             return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "按类型获取小说成功", pageInfo);
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
      * 按标签获取小说
      *
-     * @param tag
+     * @param tags
      * @return List<Novel>
      */
     @GetMapping("/getNovelByTag")
-    public Result<PageInfo> getNovelByTag(String tag, Integer pageNum, Integer pageSize) {
-        List<Novel> novelList = novelservice.getNovelByTag(tag);
+    public Result<PageInfo> getNovelByTag(String tags, Integer pageNum, Integer pageSize) {
+        if (pageNum == null || pageSize == null || tags == null) {
+            throw new CommonException("数值为空");
+        }
+        List<Novel> novelList = novelservice.getNovelByTag(tags);
         PageHelper.startPage(pageNum, pageSize);
         if (!novelList.isEmpty()) {
             PageInfo pageInfo = new PageInfo(novelList);
             return new Result<>(ResultEnums.SUCCESS.getCode(), "按标签获取小说成功", pageInfo);
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
@@ -118,13 +154,16 @@ public class NovelController {
      */
     @GetMapping("/getNovelByword")
     public Result<PageInfo> getNovelByword(Integer word, Integer pageNum, Integer pageSize) {
+        if (pageNum == null || pageSize == null || word == null) {
+            throw new CommonException("数值为空");
+        }
         List<Novel> novelList = novelservice.getNovelByword(word);
         PageHelper.startPage(pageNum, pageSize);
         if (!novelList.isEmpty()) {
             PageInfo pageInfo = new PageInfo(novelList);
             return new Result<>(ResultEnums.SUCCESS.getCode(), "按小说字数获取小说成功", pageInfo);
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
 
     }
 
@@ -135,14 +174,17 @@ public class NovelController {
      */
     @GetMapping("/getNovelByHitsNum")
     public Result<PageInfo> getNovelByHitsNum(Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
+        if (pageNum == null || pageSize == null) {
+            throw new CommonException("数值为空");
+        }
         List<Novel> novelList = novelservice.getNovelByHitsNum();
+        PageHelper.startPage(pageNum, pageSize);
         System.out.println(novelList);
         if (!novelList.isEmpty()) {
             PageInfo pageInfo = new PageInfo(novelList);
             return new Result<>(ResultEnums.SUCCESS.getCode(), "按热度获取小说成功", pageInfo);
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
@@ -152,7 +194,9 @@ public class NovelController {
      */
     @GetMapping("/getNovelByUpdateTime")
     public Result<PageInfo> getNovelByUpdateTime(Integer pageNum, Integer pageSize) {
-        System.out.println("分页" + pageNum + " " + pageSize);
+        if (pageNum == null || pageSize == null) {
+            throw new CommonException("数值为空");
+        }
         PageHelper.startPage(pageNum, pageSize);
         List<Novel> novelList = novelservice.getNovelByUpdateTime();
         if (!novelList.isEmpty()) {
@@ -161,7 +205,7 @@ public class NovelController {
             return new Result<>(ResultEnums.SUCCESS.getCode(), "按更新时间获取小说成功", pageInfo);
 
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
@@ -171,6 +215,9 @@ public class NovelController {
      */
     @GetMapping("/getNovelByStatus")
     public Result<PageInfo> getNovelByStatus(Integer status, Integer pageNum, Integer pageSize) {
+        if (pageNum == null || pageSize == null || status == null) {
+            throw new CommonException("数值为空");
+        }
         List<Novel> novelList = novelservice.getNovelByStatus(status);
         PageHelper.startPage(pageNum, pageSize);
         if (!novelList.isEmpty()) {
@@ -179,7 +226,7 @@ public class NovelController {
             return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "按小说完结状态获取小说成功", pageInfo);
 
         }
-        return new Result<>(ResultEnums.ERROR.getCode(), "服务器异常");
+        return new Result<>(ResultEnums.DATA_NOT_FOUND.getCode(), "获取失败");
     }
 
     /**
@@ -206,8 +253,8 @@ public class NovelController {
      */
     @PostMapping("/getNovelByMultiple")
     public Result<PageInfo> getNovelByMultiple(@RequestBody NovelPage novelPage) {
-        List<Novel> novelList = novelservice.getNovelByMultiple(novelPage);
         PageHelper.startPage(novelPage.getPageNum(), novelPage.getPageSize());
+        List<Novel> novelList = novelservice.getNovelByMultiple(novelPage);
         System.out.println(novelList);
         if (!novelList.isEmpty()) {
             PageInfo pageInfo = new PageInfo(novelList);
