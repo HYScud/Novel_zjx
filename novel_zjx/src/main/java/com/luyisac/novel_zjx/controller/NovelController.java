@@ -56,7 +56,7 @@ public class NovelController {
 
     /**
      * 获取我的所有小说
-     *
+     * 
      * @return List<Novel>
      */
     @GetMapping("/getMyNovel")
