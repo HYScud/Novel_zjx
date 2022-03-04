@@ -60,26 +60,25 @@ public class NovelController {
      * @return List<Novel>
      */
     @GetMapping("/getMyNovel")
-    public Result<PageInfo> getMyNovel(Integer pageNum, Integer pageSize, Integer userId) {
-        if (pageNum == null || pageSize == null) {
+    public Result getMyNovel(Integer pageNum, Integer pageSize, Integer userId) {
+        if (pageNum == null || pageSize == null||userId==null) {
             throw new CommonException("数值为空");
         }
         PageHelper.startPage(pageNum, pageSize);
         List<Novel> novelList;
-        if (redisUtil.hasKey(userId.toString())) {
-            PageHelper.startPage(pageNum, pageSize);
-            novelList = (List<Novel>) redisUtil.get(userId.toString());
-            PageInfo pageInfo = new PageInfo(novelList);
+        String key="novel_getMy_"+userId.toString();
+        redisUtil.del(userId.toString());
+        if (redisUtil.hasKey(key)) {
+            PageInfo pageInfo = (PageInfo) redisUtil.get(key);
             log.info("从redis中取");
-            redisUtil.del(userId.toString());
-            return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "获取我的小说成功", pageInfo);
+            return new Result<>(ResultEnums.SUCCESS.getCode(), "获取我的小说成功", pageInfo);
         } else {
             novelList = novelservice.getMyNovel(userId);
             System.out.println(novelList);
             if (!novelList.isEmpty()) {
-                redisUtil.set(userId.toString(),novelList);
                 PageInfo pageInfo = new PageInfo(novelList);
-                return new Result<PageInfo>(ResultEnums.SUCCESS.getCode(), "获取我的小说成功", pageInfo);
+                redisUtil.set(key,pageInfo);
+                return new Result<>(ResultEnums.SUCCESS.getCode(), "获取我的小说成功", pageInfo);
             }
         }
 

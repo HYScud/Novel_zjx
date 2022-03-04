@@ -172,6 +172,6 @@ public class UserController {
         String thumpurl = arr[0] + thump + arr[1];
 
         System.out.println("上传文件文件完毕");
-        return new Result(ResultEnums.SUCCESS.getCode(), "操作操作成功", url);
+        return new Result(ResultEnums.SUCCESS.getCode(), "操作操作成功", thumpurl);
     }
 }
